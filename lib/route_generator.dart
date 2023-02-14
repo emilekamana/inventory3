@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stock_management/main.dart';
 import 'package:stock_management/screens/add_inventory_form.dart';
+import 'package:stock_management/screens/sales_form.dart';
 import 'package:stock_management/screens/splash.dart';
 
 class RouteGenerator {
@@ -14,6 +15,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const Splash());
       case '/add_inventory':
         return MaterialPageRoute(builder: (_) => const AddInventoryForm());
+      case '/sales_form':
+        return MaterialPageRoute(builder: (_) => const SalesForm());
       default:
         return MaterialPageRoute(builder: (_) => const MyHomePage());
     }

@@ -15,8 +15,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      // initialRoute: '/splash',
-      initialRoute: '/add_inventory',
+      initialRoute: '/splash',
+      // initialRoute: '/sales_form',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
