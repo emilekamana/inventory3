@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stock_management/widgets/default_scaffold.dart';
 
 import 'route_generator.dart';
 
@@ -34,59 +35,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              'Stock Management',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 2,
-              ),
-            ),
-          ),
-          drawer: Drawer(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ListView(
-                children: const [
-                  ListTile(
-                    leading: Icon(Icons.home),
-                    title: Text(
-                      'Home',
-                      style: TextStyle(
-                        letterSpacing: 2,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.list),
-                    title: Text(
-                      'Stock',
-                      style: TextStyle(
-                        letterSpacing: 2,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.history),
-                    title: Text(
-                      'History',
-                      style: TextStyle(
-                        letterSpacing: 2,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          body: Padding(
+    return DefaultScaffold(
+      body: Padding(
             padding: const EdgeInsets.all(20.0),
             child: GridView.count(
               crossAxisCount: 2,
@@ -187,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-          )),
+          ),
     );
   }
 }

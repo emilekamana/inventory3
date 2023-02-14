@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stock_management/main.dart';
-import 'package:stock_management/pages/splash.dart';
+import 'package:stock_management/screens/splash.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
