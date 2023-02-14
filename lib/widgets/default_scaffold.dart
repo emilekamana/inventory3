@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 
 class DefaultScaffold extends StatelessWidget {
   final Widget body;
+  final String title;
 
-  const DefaultScaffold({super.key, required this.body});
+  const DefaultScaffold({super.key, required this.title, required this.body});
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'Inventory',
-            style: TextStyle(
+          title: Text(
+            title,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 24,
               fontWeight: FontWeight.w700,
@@ -59,7 +60,10 @@ class DefaultScaffold extends StatelessWidget {
             ),
           ),
         ),
-        body: body,
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: body,
+        ),
       ),
     );
   }
