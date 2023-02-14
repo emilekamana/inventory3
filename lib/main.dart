@@ -15,8 +15,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/splash',
-      // initialRoute: '/sales_form',
+      // initialRoute: '/splash',
+      initialRoute: '/view_stock',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -63,7 +63,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   letterSpacing: 2,
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushNamed('/sales_form');
+              },
             ),
           ),
           Container(
@@ -86,7 +88,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   letterSpacing: 2,
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushNamed('/add_inventory');
+              },
             ),
           ),
           Container(

@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class DefaultScaffold extends StatelessWidget {
   final Widget body;
   final String title;
+  final Widget? floatingButton;
 
-  const DefaultScaffold({super.key, required this.title, required this.body});
+  const DefaultScaffold({super.key, required this.title, required this.body, this.floatingButton});
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +65,7 @@ class DefaultScaffold extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           child: body,
         ),
+        floatingActionButton: floatingButton,
       ),
     );
   }
