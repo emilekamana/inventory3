@@ -5,7 +5,11 @@ class DefaultScaffold extends StatelessWidget {
   final String title;
   final Widget? floatingButton;
 
-  const DefaultScaffold({super.key, required this.title, required this.body, this.floatingButton});
+  const DefaultScaffold(
+      {super.key,
+      required this.title,
+      required this.body,
+      this.floatingButton});
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +28,29 @@ class DefaultScaffold extends StatelessWidget {
         ),
         drawer: Drawer(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(0),
             child: ListView(
-              children: const [
+              children: [
+                const DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                  ),
+                  child: Text(
+                    'Menu',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ),
                 ListTile(
-                  leading: Icon(Icons.home),
-                  title: Text(
+                  onTap: () {
+                    Navigator.of(context).popAndPushNamed('/');
+                  },
+                  leading: const Icon(Icons.home),
+                  title: const Text(
                     'Home',
                     style: TextStyle(
                       letterSpacing: 2,
@@ -38,8 +59,11 @@ class DefaultScaffold extends StatelessWidget {
                   ),
                 ),
                 ListTile(
-                  leading: Icon(Icons.list),
-                  title: Text(
+                  leading: const Icon(Icons.list),
+                  onTap: () {
+                    Navigator.of(context).popAndPushNamed('/view_stock');
+                  },
+                  title: const Text(
                     'Stock',
                     style: TextStyle(
                       letterSpacing: 2,
@@ -48,8 +72,11 @@ class DefaultScaffold extends StatelessWidget {
                   ),
                 ),
                 ListTile(
-                  leading: Icon(Icons.history),
-                  title: Text(
+                  onTap: () {
+                    Navigator.of(context).popAndPushNamed('/');
+                  },
+                  leading: const Icon(Icons.history),
+                  title: const Text(
                     'History',
                     style: TextStyle(
                       letterSpacing: 2,
