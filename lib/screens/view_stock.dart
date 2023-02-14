@@ -20,12 +20,19 @@ class _ViewStockState extends State<ViewStock> {
       ),
       title: "View Stock",
       body: Container(
-        // decoration: BoxDecoration(
-        //   border: Border.all(
-        //     width: 1,
-        //   ),
-        //   borderRadius: const BorderRadius.all(Radius.circular(10)),
-        // ),
+        clipBehavior: Clip.hardEdge,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blue.withOpacity(0.3),
+              spreadRadius: 4,
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+        ),
         child: DataTable(
           headingTextStyle: const TextStyle(
             color: Colors.white,
@@ -36,7 +43,7 @@ class _ViewStockState extends State<ViewStock> {
           dataRowHeight: 80,
           headingRowColor: MaterialStateColor.resolveWith(
             (states) {
-              return Colors.blue.shade300;
+              return Colors.blue.shade400;
             },
           ),
           columns: const [

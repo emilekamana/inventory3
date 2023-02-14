@@ -16,6 +16,15 @@ class DefaultScaffold extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          actions: const [
+            CircleAvatar(
+              backgroundColor: Colors.white,
+              child: Icon(
+                Icons.person,
+                color: Colors.blue,
+              ),
+            ),
+          ],
           title: Text(
             title,
             style: const TextStyle(
@@ -65,6 +74,19 @@ class DefaultScaffold extends StatelessWidget {
                   },
                   title: const Text(
                     'Stock',
+                    style: TextStyle(
+                      letterSpacing: 2,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.note),
+                  onTap: () {
+                    Navigator.of(context).popAndPushNamed('/notes');
+                  },
+                  title: const Text(
+                    'Notes',
                     style: TextStyle(
                       letterSpacing: 2,
                       fontWeight: FontWeight.w700,

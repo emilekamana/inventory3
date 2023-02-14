@@ -15,8 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      // initialRoute: '/splash',
-      initialRoute: '/view_stock',
+      initialRoute: '/splash',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -136,7 +135,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   letterSpacing: 2,
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushNamed("/notes");
+              },
             ),
           ),
         ],
