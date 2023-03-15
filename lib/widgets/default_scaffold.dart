@@ -1,4 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:stock_management/repositories/auth_repository.dart';
+
+final AuthRepository _auth = AuthRepository();
 
 class DefaultScaffold extends StatelessWidget {
   final Widget body;
@@ -10,20 +14,36 @@ class DefaultScaffold extends StatelessWidget {
       required this.title,
       required this.body,
       this.floatingButton});
-
+// await _auth.signOut().catchError((e) {
+//                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+//                       content: Text(e.message),
+//                     ));
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          actions: const [
-            CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Icon(
-                Icons.person,
-                color: Colors.blue,
-              ),
-            ),
+          actions: [
+            IconButton(
+              onPressed: () async {
+                await _auth.signOut().then((value) {
+                  Navigator.of(context).popAndPushNamed('/signin');
+                }).catchError((e) {
+                  print(e);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(e.message),
+                  ));
+                });
+              },
+              icon: const Icon(Icons.exit_to_app),
+            )
+            // CircleAvatar(
+            //   backgroundColor: Colors.white,
+            //   child: Icon(
+            //     Icons.person,
+            //     color: Colors.blue,
+            //   ),
+            // ),
           ],
           title: Text(
             title,
