@@ -16,7 +16,7 @@ class _SlashState extends State<Splash> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 3),
-        (() => Navigator.of(context).popAndPushNamed('/')));
+        (() => Navigator.of(context).popAndPushNamed('/signin')));
   }
 
   @override
