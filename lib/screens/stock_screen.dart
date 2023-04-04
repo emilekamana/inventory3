@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:stock_management/widgets/default_scaffold.dart';
 
-class ViewStock extends StatefulWidget {
-  const ViewStock({super.key});
+class StockScreen extends StatefulWidget {
+  const StockScreen({super.key});
 
   @override
   State<StatefulWidget> createState() {
-    return _ViewStockState();
+    return _StockScreenState();
   }
 }
 
-class _ViewStockState extends State<ViewStock> {
+class _StockScreenState extends State<StockScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultScaffold(

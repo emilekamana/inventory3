@@ -4,6 +4,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:stock_management/main.dart';
 
+import '../repositories/auth_repository.dart';
+
+final AuthRepository _auth = AuthRepository();
+
 class Splash extends StatefulWidget {
   const Splash({super.key});
 
@@ -15,8 +19,14 @@ class _SlashState extends State<Splash> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 3),
-        (() => Navigator.of(context).popAndPushNamed('/signin')));
+    Timer(
+        const Duration(seconds: 3),
+        (() => {
+              if (_auth.currentUser != null)
+                {Navigator.of(context).popAndPushNamed('/')}
+              else
+                Navigator.of(context).popAndPushNamed('/login')
+            }));
   }
 
   @override

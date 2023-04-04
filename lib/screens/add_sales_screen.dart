@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:stock_management/widgets/default_scaffold.dart';
 
-class SalesForm extends StatefulWidget {
-  const SalesForm({super.key});
+class AddSaleScreen extends StatefulWidget {
+  const AddSaleScreen({super.key});
 
   @override
   State<StatefulWidget> createState() {
-    return _SalesFormState();
+    return _AddSaleScreenState();
   }
 }
 
-class _SalesFormState extends State<SalesForm> {
+class _AddSaleScreenState extends State<AddSaleScreen> {
   final _formKey = GlobalKey<FormState>();
 
 // List of items in our dropdown menu

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:stock_management/main.dart';
-import 'package:stock_management/screens/add_inventory_form.dart';
-import 'package:stock_management/screens/notes.dart';
-import 'package:stock_management/screens/sales_form.dart';
-import 'package:stock_management/screens/signup_page.dart';
-import 'package:stock_management/screens/splash.dart';
-import 'package:stock_management/screens/signin_page.dart';
-import 'package:stock_management/screens/view_stock.dart';
+import 'package:stock_management/screens/add_stock_screen.dart';
+import 'package:stock_management/screens/history_screen.dart';
+import 'package:stock_management/screens/home_screen.dart';
+import 'package:stock_management/screens/notes_screen.dart';
+import 'package:stock_management/screens/add_sales_screen.dart';
+import 'package:stock_management/screens/sales_screen.dart';
+import 'package:stock_management/screens/signup_screen.dart';
+import 'package:stock_management/screens/splash_screen.dart';
+import 'package:stock_management/screens/login_screen.dart';
+import 'package:stock_management/screens/stock_screen.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -14,23 +16,27 @@ class RouteGenerator {
 
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (_) => const MyHomePage());
+        return MaterialPageRoute(builder: (_) => const HomeScreen());
       case '/splash':
         return MaterialPageRoute(builder: (_) => const Splash());
-      case '/add_inventory':
-        return MaterialPageRoute(builder: (_) => const AddInventoryForm());
-      case '/sales_form':
-        return MaterialPageRoute(builder: (_) => const SalesForm());
-      case '/view_stock':
-        return MaterialPageRoute(builder: (_) => const ViewStock());
+      case '/add_Stock':
+        return MaterialPageRoute(builder: (_) => const AddStockScreen());
+      case '/add_sale':
+        return MaterialPageRoute(builder: (_) => const AddSaleScreen());
+      case '/stock':
+        return MaterialPageRoute(builder: (_) => const StockScreen());
+      case '/sales':
+        return MaterialPageRoute(builder: (_) => const SalesScreen());
       case '/notes':
-        return MaterialPageRoute(builder: (_) => const Notes());
+        return MaterialPageRoute(builder: (_) => const NotesScreen());
       case '/signup':
-        return MaterialPageRoute(builder: (_) => const SignUpPage());
-      case '/signin':
-        return MaterialPageRoute(builder: (_) => const SignInPage());
+        return MaterialPageRoute(builder: (_) => const SignUpScreen());
+      case '/login':
+        return MaterialPageRoute(builder: (_) => const LogInScreen());
+      case '/history':
+        return MaterialPageRoute(builder: (_) => const HistoryScreen());
       default:
-        return MaterialPageRoute(builder: (_) => const MyHomePage());
+        return MaterialPageRoute(builder: (_) => const HomeScreen());
     }
   }
 }

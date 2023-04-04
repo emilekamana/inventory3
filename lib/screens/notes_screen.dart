@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:stock_management/widgets/default_scaffold.dart';
 
-class Notes extends StatefulWidget {
-  const Notes({super.key});
+class NotesScreen extends StatefulWidget {
+  const NotesScreen({super.key});
 
   @override
   State<StatefulWidget> createState() {
-    return _NotesState();
+    return _NotesScreenState();
   }
 }
 
-class _NotesState extends State<Notes> {
+class _NotesScreenState extends State<NotesScreen> {
   String input = ""; // declare variables for the state
 
   List notes = [];
@@ -106,31 +106,36 @@ class _NotesState extends State<Notes> {
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 32),
               ),
             )
-          : ListView.builder(
-              itemCount: notes.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Column(
-                  children: [
-                    ListTile(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                      tileColor: Colors.blueGrey.shade100,
-                      title: Row(
-                        children: [
-                          Text(notes[index]),
-                        ],
+          : SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height * 0.8,
+            child: ListView.builder(
+                itemCount: notes.length,
+                // scrollDirection: Axis.vertical,
+                itemBuilder: (BuildContext context, int index) {
+                  return Column(
+                    children: [
+                      ListTile(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                        tileColor: Colors.blueGrey.shade100,
+                        title: Row(
+                          children: [
+                            Text(notes[index]),
+                          ],
+                        ),
+                        trailing: PopUpOptionMenu(
+                          deleteNote: deleteNote,
+                          index: index,
+                        ),
                       ),
-                      trailing: PopUpOptionMenu(
-                        deleteNote: deleteNote,
-                        index: index,
+                      const SizedBox(
+                        height: 10,
                       ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                  ],
-                );
-              },
-            ),
+                    ],
+                  );
+                },
+              ),
+          ),
     );
   }
 }

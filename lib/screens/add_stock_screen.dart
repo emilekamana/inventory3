@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:stock_management/widgets/default_scaffold.dart';
 
-class AddInventoryForm extends StatefulWidget {
-  const AddInventoryForm({super.key});
+class AddStockScreen extends StatefulWidget {
+  const AddStockScreen({super.key});
 
   @override
   State<StatefulWidget> createState() {
-    return _AddInventoryFormState();
+    return _AddStockScreenState();
   }
 }
 
-class _AddInventoryFormState extends State<AddInventoryForm> {
+class _AddStockScreenState extends State<AddStockScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -81,7 +81,7 @@ class _AddInventoryFormState extends State<AddInventoryForm> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(  
-                child: const Text('Add to inventory'),  
+                child: const Text('Add to Stock'),  
                 onPressed: () {  
                   // It returns true if the form is valid, otherwise returns false  
                   if (_formKey.currentState!.validate()) {  

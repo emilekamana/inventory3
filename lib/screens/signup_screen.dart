@@ -7,25 +7,25 @@ import '../repositories/auth_repository.dart';
 
 final AuthRepository _auth = AuthRepository();
 
-class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
   State<StatefulWidget> createState() {
-    return _SignUpPageState();
+    return _SignUpScreenState();
   }
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _shopController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  late bool _success = false;
   late bool _loading = false;
   late bool _passwordVisible = true;
+  late bool _error = false;
   String _errorMessage = 'Error occured, try again';
 
   Future<void> _register() async {
@@ -184,71 +184,69 @@ class _SignUpPageState extends State<SignUpPage> {
                 return null;
               },
             ),
-            const SizedBox(height: 20),
+            _loading
+                ? Column(children: const [
+                    SizedBox(height: 20),
+                    Text("Loading..."),
+                    SizedBox(height: 20),
+                  ])
+                : _error
+                    ? Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          Text(
+                            _errorMessage,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      )
+                    : const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                child: const Text('Register'),
+                style: ElevatedButton.styleFrom(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)))),
                 onPressed: () {
                   // It returns true if the form is valid, otherwise returns false
                   if (_formKey.currentState!.validate()) {
                     // If the form is valid, display a Snackbar.
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: Colors.grey.shade400,
-                        shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        content: const Text(
-                          'Processing...',
-                          style: TextStyle(
-                              fontSize: 24,
-                              color: Colors.black54,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    );
+                    setState(() {
+                      _loading = true;
+                    });
                     _register().then((value) {
                       setState(() {
-                        _success = true;
+                        _loading = false;
+                        _error = false;
                       });
                       if (_auth.currentUser != null) {
-                        Navigator.of(context).pushNamed('/');
+                        Navigator.of(context).popAndPushNamed('/');
                       } else {
-                        Navigator.of(context).pushNamed('/signin');
+                        Navigator.of(context).pushReplacementNamed('/login');
                       }
                     }).catchError((e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          behavior: SnackBarBehavior.floating,
-                          backgroundColor: Colors.red.shade400,
-                          shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          content: Text(
-                            _errorMessage,
-                            style: const TextStyle(
-                                fontSize: 24, color: Colors.white),
-                          ),
-                        ),
-                      );
+                      setState(() {
+                        _loading = false;
+                        _error = true;
+                      });
                     });
                   }
                 },
+                child: const Text('Register'),
               ),
             ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Already have an account? '),
+                const Text('Already have an account? '),
                 TextButton(
                     onPressed: () {
-                      Navigator.of(context).popAndPushNamed('/signin');
+                      Navigator.of(context).popAndPushNamed('/login');
                     },
-                    child: Text('Login'))
+                    child: const Text('Login'))
               ],
             ),
           ],

@@ -7,32 +7,31 @@ import '../repositories/auth_repository.dart';
 
 final AuthRepository _auth = AuthRepository();
 
-class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+class LogInScreen extends StatefulWidget {
+  const LogInScreen({super.key});
 
   @override
   State<StatefulWidget> createState() {
-    return _SignInPageState();
+    return _LogInScreenState();
   }
 }
 
-class _SignInPageState extends State<SignInPage> {
+class _LogInScreenState extends State<LogInScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  late bool _success = false;
-  late String _userEmail;
   late bool _loading = false;
   late bool _passwordVisible = true;
+  late bool _error = false;
 
   String _errorMessage = 'Error occured, try again';
 
   @override
   initState() {
-    if (_auth.currentUser != null) {
-      Navigator.of(context).pushNamed('/');
-    }
     super.initState();
+    if (_auth.currentUser != null) {
+      Navigator.of(context).popAndPushNamed('/');
+    }
   }
 
   Future<void> _login() async {
@@ -126,54 +125,51 @@ class _SignInPageState extends State<SignInPage> {
                 return null;
               },
             ),
-            const SizedBox(height: 20),
+            _loading
+                ? Column(children: const [
+                    SizedBox(height: 20),
+                    Text("Loading..."),
+                    SizedBox(height: 20),
+                  ])
+                : _error
+                    ? Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          Text(
+                            _errorMessage,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      )
+                    : const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)))),
                 child: const Text('Login'),
                 onPressed: () {
                   // It returns true if the form is valid, otherwise returns false
                   if (_formKey.currentState!.validate()) {
-                    // If the form is valid, display a Snackbar.
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: Colors.grey.shade400,
-                        shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        content: const Text(
-                          'Processing...',
-                          style: TextStyle(
-                              fontSize: 24,
-                              color: Colors.black54,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    );
+                    setState(() {
+                      _loading = true;
+                    });
                     _login().then((value) {
                       setState(() {
-                        _success = true;
+                        _loading = false;
+                        _error = false;
                       });
                       if (_auth.currentUser != null) {
                         Navigator.of(context).pushNamed('/');
                       }
                     }).catchError((e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          behavior: SnackBarBehavior.floating,
-                          backgroundColor: Colors.red.shade400,
-                          shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          content: Text(
-                            _errorMessage,
-                            style: const TextStyle(
-                                fontSize: 24, color: Colors.white),
-                          ),
-                        ),
-                      );
+                      setState(() {
+                        _loading = false;
+                        _error = true;
+                      });
                     });
                   }
                 },
@@ -183,12 +179,12 @@ class _SignInPageState extends State<SignInPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Don't have an account?"),
+                const Text("Don't have an account?"),
                 TextButton(
                     onPressed: () {
                       Navigator.of(context).popAndPushNamed('/signup');
                     },
-                    child: Text('Register'))
+                    child: const Text('Register'))
               ],
             ),
           ],

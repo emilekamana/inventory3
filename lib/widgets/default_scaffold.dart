@@ -24,26 +24,39 @@ class DefaultScaffold extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           actions: [
-            IconButton(
-              onPressed: () async {
-                await _auth.signOut().then((value) {
-                  Navigator.of(context).popAndPushNamed('/signin');
-                }).catchError((e) {
-                  print(e);
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(e.message),
-                  ));
-                });
+            PopupMenuButton<int>(
+              icon: const Icon(
+                Icons.account_circle,
+                color: Colors.white,
+              ),
+              iconSize: 30,
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 1,
+                  child: Row(
+                    children: const [
+                      Icon(
+                        Icons.exit_to_app_outlined,
+                        color: Colors.red,
+                      ),
+                      Text(
+                        'Log out',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              onSelected: (value) async {
+                if (value == 1) {
+                  await _auth.signOut().then((value) {
+                    if (_auth.currentUser == null) {
+                      Navigator.of(context).popAndPushNamed('/login');
+                    }
+                  });
+                }
               },
-              icon: const Icon(Icons.exit_to_app),
             )
-            // CircleAvatar(
-            //   backgroundColor: Colors.white,
-            //   child: Icon(
-            //     Icons.person,
-            //     color: Colors.blue,
-            //   ),
-            // ),
           ],
           title: Text(
             title,
@@ -90,7 +103,7 @@ class DefaultScaffold extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.list),
                   onTap: () {
-                    Navigator.of(context).popAndPushNamed('/view_stock');
+                    Navigator.of(context).popAndPushNamed('/stock');
                   },
                   title: const Text(
                     'Stock',
@@ -115,7 +128,7 @@ class DefaultScaffold extends StatelessWidget {
                 ),
                 ListTile(
                   onTap: () {
-                    Navigator.of(context).popAndPushNamed('/');
+                    Navigator.of(context).popAndPushNamed('/history');
                   },
                   leading: const Icon(Icons.history),
                   title: const Text(
@@ -132,7 +145,7 @@ class DefaultScaffold extends StatelessWidget {
         ),
         body: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: body,
+          child: SingleChildScrollView(child: body),
         ),
         floatingActionButton: floatingButton,
       ),
