@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stock_management/models/product_model.dart';
 import 'package:stock_management/widgets/default_scaffold.dart';
 
 class StockScreen extends StatefulWidget {
@@ -11,6 +12,9 @@ class StockScreen extends StatefulWidget {
 }
 
 class _StockScreenState extends State<StockScreen> {
+  List<bool> selected =
+      List<bool>.generate(Product.staticProducts.length, (int index) => false);
+
   @override
   Widget build(BuildContext context) {
     return DefaultScaffold(
@@ -19,36 +23,24 @@ class _StockScreenState extends State<StockScreen> {
         onPressed: () {},
       ),
       title: "View Stock",
-      body: Container(
-        clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blue.withOpacity(0.3),
-              spreadRadius: 4,
-              blurRadius: 10,
-              offset: const Offset(0, 3),
-            ),
-          ],
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-        ),
+      body: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: DataTable(
+          dividerThickness: 0.0,
           headingTextStyle: const TextStyle(
-            color: Colors.white,
-            fontSize: 24,
+            color: Color.fromARGB(255, 137, 137, 137),
+            fontSize: 18,
             fontWeight: FontWeight.w300,
           ),
           headingRowHeight: 80,
-          dataRowHeight: 80,
-          headingRowColor: MaterialStateColor.resolveWith(
-            (states) {
-              return Colors.blue.shade400;
-            },
+          dataRowHeight: 60,
+          dataTextStyle: const TextStyle(
+            fontSize: 14,
           ),
+          columnSpacing: 20.0,
           columns: const [
             DataColumn(
-              label: Text('Product name'),
+              label: Text('Name'),
             ),
             DataColumn(
               label: Text('Quantity'),
@@ -56,39 +48,62 @@ class _StockScreenState extends State<StockScreen> {
             DataColumn(
               label: Text('Price'),
             ),
+            DataColumn(
+              label: Text('Actions'),
+            ),
           ],
-          rows: const [
-            DataRow(cells: [
-              DataCell(Text('coco')),
-              DataCell(Text('100')),
-              DataCell(Text('2000')),
-            ]),
-            DataRow(cells: [
-              DataCell(Text('banana')),
-              DataCell(Text('30')),
-              DataCell(Text('400')),
-            ]),
-            DataRow(cells: [
-              DataCell(Text('onion')),
-              DataCell(Text('70')),
-              DataCell(Text('700')),
-            ]),
-            DataRow(cells: [
-              DataCell(Text('Rice')),
-              DataCell(Text('20')),
-              DataCell(Text('1000')),
-            ]),
-            DataRow(cells: [
-              DataCell(Text('beans')),
-              DataCell(Text('30')),
-              DataCell(Text('100')),
-            ]),
-            DataRow(cells: [
-              DataCell(Text('potato')),
-              DataCell(Text('50')),
-              DataCell(Text('500')),
-            ]),
-          ],
+          rows: List<DataRow>.generate(
+            Product.staticProducts.length,
+            (int index) => DataRow(
+              cells: <DataCell>[
+                DataCell(
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.25,
+                    ),
+                    child: Text(
+                      Product.staticProducts[index].name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                    ),
+                  ),
+                ),
+                DataCell(Text(Product.staticProducts[index].qty)),
+                DataCell(Text(Product.staticProducts[index].price)),
+                DataCell(
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.edit,
+                          color: Color(0xFF4796BD),
+                        ),
+                      ),
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+              selected: selected[index],
+              onSelectChanged: (bool? value) {
+                setState(() {
+                  selected[index] = value!;
+                });
+              },
+            ),
+          ),
         ),
       ),
     );
