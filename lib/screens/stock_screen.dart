@@ -12,8 +12,6 @@ class StockScreen extends StatefulWidget {
 }
 
 class _StockScreenState extends State<StockScreen> {
-  List<bool> selected =
-      List<bool>.generate(Product.staticProducts.length, (int index) => false);
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +30,7 @@ class _StockScreenState extends State<StockScreen> {
             fontSize: 18,
             fontWeight: FontWeight.w300,
           ),
-          headingRowHeight: 80,
+          headingRowHeight: 60,
           dataRowHeight: 60,
           dataTextStyle: const TextStyle(
             fontSize: 14,
@@ -96,12 +94,6 @@ class _StockScreenState extends State<StockScreen> {
                   ),
                 )
               ],
-              selected: selected[index],
-              onSelectChanged: (bool? value) {
-                setState(() {
-                  selected[index] = value!;
-                });
-              },
             ),
           ),
         ),
