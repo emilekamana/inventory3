@@ -4,9 +4,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:stock_management/main.dart';
 
-import '../repositories/auth_repository.dart';
+import '../controllers/auth_controller.dart';
 
-final AuthRepository _auth = AuthRepository();
+final AuthController _auth = AuthController();
 
 class Splash extends StatefulWidget {
   const Splash({super.key});

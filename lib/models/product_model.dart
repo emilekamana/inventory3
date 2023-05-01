@@ -2,12 +2,11 @@
 import 'dart:convert';
 
 class Product {
-  String id;
+  late String id;
   String name;
   String qty;
   String price;
   Product({
-    required this.id,
     required this.name,
     required this.qty,
     required this.price,
@@ -20,7 +19,6 @@ class Product {
     String? price,
   }) {
     return Product(
-      id: id ?? this.id,
       name: name ?? this.name,
       qty: qty ?? this.qty,
       price: price ?? this.price,
@@ -29,7 +27,6 @@ class Product {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'id': id,
       'name': name,
       'qty': qty,
       'price': price,
@@ -38,7 +35,6 @@ class Product {
 
   factory Product.fromMap(Map<String, dynamic> map) {
     return Product(
-      id: map['id'] as String,
       name: map['name'] as String,
       qty: map['qty'] as String,
       price: map['price'] as String,
@@ -71,21 +67,20 @@ class Product {
   }
 
   static final List<Product> staticProducts = [
-    Product(id: "1", name: "coco", qty: "100", price: "2000"),
+    Product(name: "coco", qty: "100", price: "2000"),
     Product(
-        id: "1",
         name: "bananabananabananabananabananabananabananabanana",
         qty: "30",
         price: "400"),
-    Product(id: "1", name: "onion", qty: "70", price: "700"),
-    Product(id: "1", name: "Rice", qty: "20", price: "1000"),
-    Product(id: "1", name: "beans", qty: "30", price: "100"),
-    Product(id: "1", name: "potato", qty: "50", price: "500"),
-    Product(id: "1", name: "coco", qty: "100", price: "2000"),
-    Product(id: "1", name: "banana", qty: "30", price: "400"),
-    Product(id: "1", name: "onion", qty: "70", price: "700"),
-    Product(id: "1", name: "Rice", qty: "20", price: "1000"),
-    Product(id: "1", name: "beans", qty: "30", price: "100"),
-    Product(id: "1", name: "potato", qty: "50", price: "500"),
+    Product( name: "onion", qty: "70", price: "700"),
+    Product( name: "Rice", qty: "20", price: "1000"),
+    Product( name: "beans", qty: "30", price: "100"),
+    Product( name: "potato", qty: "50", price: "500"),
+    Product( name: "coco", qty: "100", price: "2000"),
+    Product( name: "banana", qty: "30", price: "400"),
+    Product( name: "onion", qty: "70", price: "700"),
+    Product( name: "Rice", qty: "20", price: "1000"),
+    Product( name: "beans", qty: "30", price: "100"),
+    Product( name: "potato", qty: "50", price: "500"),
   ];
 }

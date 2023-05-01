@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:stock_management/repositories/auth_repository.dart';
+import 'package:stock_management/controllers/auth_controller.dart';
 import 'package:stock_management/widgets/default_scaffold.dart';
 
-final AuthRepository _auth = AuthRepository();
+final AuthController _auth = AuthController();
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:stock_management/widgets/default_scaffold.dart';
 import 'package:stock_management/widgets/scaffold_no_appbar.dart';
 
-import '../repositories/auth_repository.dart';
+import '../controllers/auth_controller.dart';
 
-final AuthRepository _auth = AuthRepository();
+final AuthController _auth = AuthController();
 
 class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});
