@@ -29,6 +29,16 @@ class _AddStockScreenState extends State<AddStockScreen> {
     productForms.add(NewProductForm(productControllers: FormProductModel()));
   }
 
+  @override
+  void dispose() {
+    for (var item in productForms) {
+      item.productControllers.nameController.dispose();
+      item.productControllers.qtyController.dispose();
+      item.productControllers.priceController.dispose();
+    }
+    super.dispose();
+  }
+
   void addProduct() {
     setState(() {
       productForms.add(NewProductForm(productControllers: FormProductModel()));
@@ -134,7 +144,8 @@ class _AddStockScreenState extends State<AddStockScreen> {
                       showLoadingSnackbar();
                       await createProducts();
 
-                      if (context.mounted) ScaffoldMessenger.of(context).clearSnackBars();
+                      if (context.mounted)
+                        ScaffoldMessenger.of(context).clearSnackBars();
 
                       showDoneSnackbar();
 

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stock_management/screens/home_screen.dart';
 
-import 'route_generator.dart';
+import 'utils/route_generator.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'utils/firebase_options.dart';
 
 Future main() async {
   await Firebase.initializeApp(
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Inventory',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/add_Stock',
+      initialRoute: '/stock',
       onGenerateRoute: RouteGenerator.generateRoute,
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFF3F9FB),

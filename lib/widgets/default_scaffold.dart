@@ -23,6 +23,7 @@ class DefaultScaffold extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           actions: [
             PopupMenuButton<int>(
               icon: const Icon(
@@ -58,96 +59,111 @@ class DefaultScaffold extends StatelessWidget {
               },
             )
           ],
-          title: Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 2,
-            ),
+          title: Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context).popAndPushNamed('/');
+                },
+                icon: const Icon(Icons.home),
+                iconSize: 24,
+              ),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 2,
+                ),
+              ),
+            ],
           ),
         ),
-        drawer: Drawer(
-          child: Padding(
-            padding: const EdgeInsets.all(0),
-            child: ListView(
-              children: [
-                const DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                  ),
-                  child: Text(
-                    'Menu',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    Navigator.of(context).popAndPushNamed('/');
-                  },
-                  leading: const Icon(Icons.home),
-                  title: const Text(
-                    'Home',
-                    style: TextStyle(
-                      letterSpacing: 2,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.list),
-                  onTap: () {
-                    Navigator.of(context).popAndPushNamed('/stock');
-                  },
-                  title: const Text(
-                    'Stock',
-                    style: TextStyle(
-                      letterSpacing: 2,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.note),
-                  onTap: () {
-                    Navigator.of(context).popAndPushNamed('/notes');
-                  },
-                  title: const Text(
-                    'Notes',
-                    style: TextStyle(
-                      letterSpacing: 2,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    Navigator.of(context).popAndPushNamed('/history');
-                  },
-                  leading: const Icon(Icons.history),
-                  title: const Text(
-                    'History',
-                    style: TextStyle(
-                      letterSpacing: 2,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        // drawer:
         body: Padding(
           padding: const EdgeInsets.all(20.0),
           child: SingleChildScrollView(child: body),
         ),
         floatingActionButton: floatingButton,
+      ),
+    );
+  }
+
+  buildDrawer(BuildContext context) {
+    return Drawer(
+      child: Padding(
+        padding: const EdgeInsets.all(0),
+        child: ListView(
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 2,
+                ),
+              ),
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.of(context).popAndPushNamed('/');
+              },
+              leading: const Icon(Icons.home),
+              title: const Text(
+                'Home',
+                style: TextStyle(
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.list),
+              onTap: () {
+                Navigator.of(context).popAndPushNamed('/stock');
+              },
+              title: const Text(
+                'Stock',
+                style: TextStyle(
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.note),
+              onTap: () {
+                Navigator.of(context).popAndPushNamed('/notes');
+              },
+              title: const Text(
+                'Notes',
+                style: TextStyle(
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.of(context).popAndPushNamed('/history');
+              },
+              leading: const Icon(Icons.history),
+              title: const Text(
+                'History',
+                style: TextStyle(
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

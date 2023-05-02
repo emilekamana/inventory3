@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Product {
   late String id;
   String name;
@@ -72,15 +74,30 @@ class Product {
         name: "bananabananabananabananabananabananabananabanana",
         qty: "30",
         price: "400"),
-    Product( name: "onion", qty: "70", price: "700"),
-    Product( name: "Rice", qty: "20", price: "1000"),
-    Product( name: "beans", qty: "30", price: "100"),
-    Product( name: "potato", qty: "50", price: "500"),
-    Product( name: "coco", qty: "100", price: "2000"),
-    Product( name: "banana", qty: "30", price: "400"),
-    Product( name: "onion", qty: "70", price: "700"),
-    Product( name: "Rice", qty: "20", price: "1000"),
-    Product( name: "beans", qty: "30", price: "100"),
-    Product( name: "potato", qty: "50", price: "500"),
+    Product(name: "onion", qty: "70", price: "700"),
+    Product(name: "Rice", qty: "20", price: "1000"),
+    Product(name: "beans", qty: "30", price: "100"),
+    Product(name: "potato", qty: "50", price: "500"),
+    Product(name: "coco", qty: "100", price: "2000"),
+    Product(name: "banana", qty: "30", price: "400"),
+    Product(name: "onion", qty: "70", price: "700"),
+    Product(name: "Rice", qty: "20", price: "1000"),
+    Product(name: "beans", qty: "30", price: "100"),
+    Product(name: "potato", qty: "50", price: "500"),
   ];
+
+  factory Product.fromSnapshot(
+      QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    final data = document.data();
+
+    Product product = Product(
+      name: data['name'] ?? 'nan',
+      qty: data['qty'] ?? 'nan',
+      price: data["price"] ?? 'nan',
+    );
+
+    product.id = document.id;
+
+    return product;
+  }
 }

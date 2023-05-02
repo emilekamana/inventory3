@@ -4,7 +4,7 @@ import 'package:stock_management/models/form_product_model.dart';
 
 class NewProductForm extends StatelessWidget {
   final FormProductModel productControllers;
-  
+
   const NewProductForm({super.key, required this.productControllers});
 
   @override
@@ -35,7 +35,14 @@ class NewProductForm extends StatelessWidget {
           const SizedBox(
             height: 10,
           ),
-          TextFormField(
+          ...formFields(),
+        ],
+      ),
+    );
+  }
+
+  formFields() {
+    return [TextFormField(
             controller: productControllers.nameController,
             style: const TextStyle(fontSize: 14),
             decoration: const InputDecoration(
@@ -60,7 +67,9 @@ class NewProductForm extends StatelessWidget {
           ),
           TextFormField(
             controller: productControllers.qtyController,
-            inputFormatters: [FilteringTextInputFormatter.allow((RegExp("[.0-9]")))],
+            inputFormatters: [
+              FilteringTextInputFormatter.allow((RegExp("[.0-9]")))
+            ],
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(
               hintStyle: TextStyle(fontSize: 14),
@@ -85,18 +94,20 @@ class NewProductForm extends StatelessWidget {
             height: 10,
           ),
           TextFormField(
-            inputFormatters: [FilteringTextInputFormatter.allow((RegExp("[.0-9]")))],
+            inputFormatters: [
+              FilteringTextInputFormatter.allow((RegExp("[.0-9]")))
+            ],
             keyboardType: TextInputType.number,
             controller: productControllers.priceController,
             decoration: const InputDecoration(
-              hintStyle: TextStyle(fontSize: 14),
-              labelStyle: TextStyle(fontSize: 14),
-              contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10))),
-              labelText: 'Price',
-              hintText: 'Price in integer format'
-            ),
+                hintStyle: TextStyle(fontSize: 14),
+                labelStyle: TextStyle(fontSize: 14),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                labelText: 'Price',
+                hintText: 'Price in integer format'),
             validator: (value) {
               if (value is String) {
                 double? input = double.tryParse(value);
@@ -106,12 +117,6 @@ class NewProductForm extends StatelessWidget {
               }
               return null;
             },
-          ),
-          // const SizedBox(
-          //   height: 10,
-          // ),
-        ],
-      ),
-    );
+          ),];
   }
 }
