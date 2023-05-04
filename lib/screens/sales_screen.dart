@@ -1,5 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:stock_management/controllers/sale_controller.dart';
+import 'package:stock_management/models/sale_model.dart';
 import 'package:stock_management/widgets/default_scaffold.dart';
+
+SaleController _saleController = SaleController();
 
 class SalesScreen extends StatefulWidget {
   const SalesScreen({super.key});
@@ -11,6 +16,8 @@ class SalesScreen extends StatefulWidget {
 }
 
 class _SalesScreenState extends State<SalesScreen> {
+  final CollectionReference<Map<String, dynamic>> _sales =
+      _saleController.salesCollection;
   @override
   Widget build(BuildContext context) {
     return DefaultScaffold(
@@ -19,78 +26,125 @@ class _SalesScreenState extends State<SalesScreen> {
         onPressed: () {},
       ),
       title: "Sales",
-      body: Container(
-        clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blue.withOpacity(0.3),
-              spreadRadius: 4,
-              blurRadius: 10,
-              offset: const Offset(0, 3),
-            ),
-          ],
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-        ),
-        child: DataTable(
-          headingTextStyle: const TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.w300,
-          ),
-          headingRowHeight: 80,
-          dataRowHeight: 80,
-          headingRowColor: MaterialStateColor.resolveWith(
-            (states) {
-              return Colors.blue.shade400;
-            },
-          ),
-          columns: const [
-            DataColumn(
-              label: Text('Product name'),
-            ),
-            DataColumn(
-              label: Text('Quantity'),
-            ),
-            DataColumn(
-              label: Text('Price'),
-            ),
-          ],
-          rows: const [
-            DataRow(cells: [
-              DataCell(Text('coco')),
-              DataCell(Text('100')),
-              DataCell(Text('2000')),
-            ]),
-            DataRow(cells: [
-              DataCell(Text('banana')),
-              DataCell(Text('30')),
-              DataCell(Text('400')),
-            ]),
-            DataRow(cells: [
-              DataCell(Text('onion')),
-              DataCell(Text('70')),
-              DataCell(Text('700')),
-            ]),
-            DataRow(cells: [
-              DataCell(Text('Rice')),
-              DataCell(Text('20')),
-              DataCell(Text('1000')),
-            ]),
-            DataRow(cells: [
-              DataCell(Text('beans')),
-              DataCell(Text('30')),
-              DataCell(Text('100')),
-            ]),
-            DataRow(cells: [
-              DataCell(Text('potato')),
-              DataCell(Text('50')),
-              DataCell(Text('500')),
-            ]),
-          ],
-        ),
-      ),
+      body: StreamBuilder(
+          stream: _sales.snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text(snapshot.error.toString());
+            }
+
+            if (snapshot.connectionState == ConnectionState.waiting ||
+                snapshot.hasData == false) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const <Widget>[
+                    CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Color(0xFF4796BD))),
+                    // Loader Animation Widget
+                    Padding(padding: EdgeInsets.only(top: 20.0)),
+                  ],
+                ),
+              );
+            }
+
+            if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+              return Column(
+                children: const <Widget>[
+                  Center(child: Text("Unable to find any records"))
+                ],
+              );
+            }
+
+            if (snapshot.hasData) {
+              return Theme(
+                data: Theme.of(context)
+                    .copyWith(dividerColor: Colors.transparent),
+                child: DataTable(
+                  dividerThickness: 0.0,
+                  headingTextStyle: const TextStyle(
+                    color: Color.fromARGB(255, 137, 137, 137),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w300,
+                  ),
+                  headingRowHeight: 60,
+                  dataRowHeight: 60,
+                  dataTextStyle: const TextStyle(
+                    fontSize: 14,
+                  ),
+                  columnSpacing: 20.0,
+                  columns: const [
+                    DataColumn(
+                      label: Text('Name'),
+                    ),
+                    DataColumn(
+                      label: Text('Products'),
+                    ),
+                    DataColumn(
+                      label: Text('Total'),
+                    ),
+                    DataColumn(
+                      label: Text('Date'),
+                    ),
+                  ],
+                  rows: snapshot.data!.docs.map((doc) {
+                    Sale sale = Sale.fromSnapshot(doc);
+                    return DataRow(cells: <DataCell>[
+                      DataCell(
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width * 0.1,
+                          ),
+                          child: Text(
+                            sale.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width * 0.3,
+                          ),
+                          child: Text(
+                            sale.products.toString(),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width * 0.1,
+                          ),
+                          child: Text(
+                            sale.total,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          sale.dateTimeAdded.toString(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                        ),
+                      ),
+                    ]);
+                  }).toList(),
+                ),
+              );
+            }
+            return const Center(child: Text('Something went wrong!!'));
+          }),
     );
   }
 }

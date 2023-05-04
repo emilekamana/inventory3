@@ -94,15 +94,15 @@ class Sale {
     final data = document.data();
 
     Sale sale = Sale(
-      name: data['name'] as String,
+      name: data['name'] ?? 'nan',
       products: List<SoldProductModel>.from(
-        (data['products'] as List<int>).map<SoldProductModel>(
+        (data['products'] as List<dynamic>).map<SoldProductModel>(
           (x) => SoldProductModel.fromMap(x as Map<String, dynamic>),
         ),
       ),
-      total: data['total'] as String,
+      total: data['total'] ?? 'nan',
       dateTimeAdded:
-          DateTime.fromMillisecondsSinceEpoch(data['dateTimeAdded'] as int),
+          DateTime.fromMillisecondsSinceEpoch(data['dateTimeAdded'] ?? 0),
     );
 
     sale.id = document.id;

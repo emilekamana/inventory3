@@ -44,7 +44,7 @@ class SoldProductModel {
   factory SoldProductModel.fromJson(String source) => SoldProductModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  String toString() => 'SoldProductModel(id: $id, qty: $qty, price: $price)';
+  String toString() => 'Product id: $id, qty: $qty, price: $price';
 
   @override
   bool operator ==(covariant SoldProductModel other) {

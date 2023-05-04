@@ -10,18 +10,18 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  DateTime? selectedDate;
+  DateTimeRange? selectedDateRange;
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final picked = await showDateRangePicker(
       context: context,
-      initialDate: selectedDate ?? DateTime.now(),
+      initialDateRange: selectedDateRange ?? DateTimeRange(start: DateTime.now().subtract(const Duration(days: 3)),end: DateTime.now().add(const Duration(days: 3))) ,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
-    if (picked != null && picked != selectedDate) {
+    if (picked != null && picked != selectedDateRange) {
       setState(() {
-        selectedDate = picked;
+        selectedDateRange = selectedDateRange;
       });
     }
   }

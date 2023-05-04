@@ -31,7 +31,7 @@ class _StockScreenState extends State<StockScreen> {
           Navigator.of(context).pushNamed('/add_Stock');
         },
       ),
-      title: "View Stock",
+      title: "Stock",
       body: StreamBuilder(
           stream: _products.snapshots(),
           builder: (context, snapshot) {

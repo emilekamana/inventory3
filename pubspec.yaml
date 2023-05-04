@@ -35,18 +35,13 @@ dependencies:
   firebase_auth: ^4.2.10
   flutter:
     sdk: flutter
+  flutter_local_notifications: ^14.0.0+1
   flutter_speed_dial: ^6.2.0
   flutter_svg: ^1.1.6
   google_fonts: ^4.0.3
   syncfusion_flutter_datepicker: ^21.1.38
 
 dev_dependencies:
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
