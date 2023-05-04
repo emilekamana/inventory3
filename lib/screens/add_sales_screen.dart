@@ -1,9 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:stock_management/controllers/product_controller.dart';
+import 'package:stock_management/models/product_model.dart';
+import 'package:stock_management/models/sale_model.dart';
+import 'package:stock_management/models/sold_product_model.dart';
 import 'package:stock_management/widgets/default_scaffold.dart';
+import 'package:stock_management/widgets/leading_scaffold.dart';
+import 'package:stock_management/widgets/sale_product_form.dart';
+
+ProductController _productController = ProductController();
 
 class AddSaleScreen extends StatefulWidget {
-  const AddSaleScreen({super.key});
-
+  AddSaleScreen({super.key});
   @override
   State<StatefulWidget> createState() {
     return _AddSaleScreenState();
@@ -12,106 +20,206 @@ class AddSaleScreen extends StatefulWidget {
 
 class _AddSaleScreenState extends State<AddSaleScreen> {
   final _formKey = GlobalKey<FormState>();
+  final CollectionReference<Map<String, dynamic>> _products =
+      _productController.productsCollection;
 
-// List of items in our dropdown menu
-  var items = [
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    'Item 5',
-  ];
+  late TextEditingController _nameController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  late List<String> chosenProductsIds = SaleProductForm.allForms
+      .map((e) => e.productContoller!.dropDownValue.toString())
+      .toList();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> createNewSale() async {
+    try {
+      List<SoldProductModel> soldProducts = [];
+      double total = 0;
+      for (var sale in SaleProductForm.allForms) {
+        soldProducts.add(SoldProductModel(
+            id: sale.productContoller!.dropDownValue!.value,
+            qty: sale.qtyController.text,
+            price: sale.priceController.text));
+        total = total + double.parse(sale.priceController.text);
+      }
+      Sale(
+          name: _nameController.text,
+          products: soldProducts,
+          total: total.toString(),
+          dateTimeAdded: DateTime.now());
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void addProduct(snapshot) {
+    setState(() {
+      SaleProductForm(
+        snapshot: snapshot,
+      );
+    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+    //       duration: const Duration(milliseconds: 200), curve: Curves.easeOut);
+    // });
+  }
+
+  void removeProduct(element) {
+    if (SaleProductForm.allForms.length > 1) {
+      setState(() {
+        SaleProductForm.allForms.remove(element);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultScaffold(
+    return LeadingScaffold(
       title: 'Add Sold Item',
-      body: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            DropdownButtonFormField(
-                hint: const Text('Choose item item'),
-                items: items.map((String items) {
-                  return DropdownMenuItem(
-                    value: items,
-                    child: Text(items),
-                  );
-                }).toList(),
-                onChanged: (String? value){}),
-            // TextFormField(
-            //   decoration: const InputDecoration(
-            //     hintText: 'Enter the product name',
-            //     labelText: 'Name',
-            //   ),
-            //   validator: (value) {
-            //     if (value is String) {
-            //       if (value.isEmpty) {
-            //         return 'Please enter some text';
-            //       }
-            //     }
-            //     return null;
-            //   },
-            // ),
-            const SizedBox(
-              height: 20,
-            ),
-            TextFormField(
-              decoration: const InputDecoration(
-                hintText: 'Number of items or qunatity',
-                labelText: 'Quantity',
-              ),
-              validator: (value) {
-                if (value is String) {
-                  double? input = double.tryParse(value);
-                  if (input == null) {
-                    return 'Please enter a valid number';
-                  }
-                }
-                return null;
-              },
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            TextFormField(
-              decoration: const InputDecoration(
-                hintText: 'Enter the price',
-                labelText: 'Price',
-              ),
-              validator: (value) {
-                if (value is String) {
-                  double? input = double.tryParse(value);
-                  if (input == null) {
-                    return 'Please enter a valid number';
-                  }
-                }
-                return null;
-              },
-            ),
-            const SizedBox(
-              height: 40,
-            ),
-            SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  child: const Text('Add to inventory'),
-                  onPressed: () {
-                    // It returns true if the form is valid, otherwise returns false
-                    if (_formKey.currentState!.validate()) {
-                      // If the form is valid, display a Snackbar.
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Data is in processing.')));
-                    }
-                  },
-                )),
-          ],
-        ),
-      ),
+      body: StreamBuilder(
+          stream: _products.snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text(snapshot.error.toString());
+            }
+
+            if (snapshot.connectionState == ConnectionState.waiting ||
+                snapshot.hasData == false) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const <Widget>[
+                    CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Color(0xFF4796BD))),
+                    // Loader Animation Widget
+                    Padding(padding: EdgeInsets.only(top: 20.0)),
+                  ],
+                ),
+              );
+            }
+            if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+              return Column(
+                children: const <Widget>[
+                  Center(child: Text("Unable to find any products"))
+                ],
+              );
+            }
+            if (snapshot.hasData) {
+              snapshot.data!.docs.removeWhere(
+                  (element) => chosenProductsIds.contains(element.id));
+              if (SaleProductForm.allForms.isEmpty) {
+                SaleProductForm(
+                  snapshot: snapshot,
+                );
+              }
+              return Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    buildForms(),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        RawMaterialButton(
+                          onPressed: () => addProduct(snapshot),
+                          elevation: 2.0,
+                          fillColor: const Color(0xFF4796BD),
+                          padding: const EdgeInsets.all(15.0),
+                          shape: const CircleBorder(),
+                          child: const Icon(
+                            Icons.add,
+                            size: 20.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Expanded(
+                            // height: 50,
+                            child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              fixedSize: Size(
+                                  MediaQuery.of(context).size.width * 0.7, 50),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)))),
+                          child: const Text('Add to Stock'),
+                          onPressed: () async {
+                            // It returns true if the form is valid, otherwise returns false
+                            if (_formKey.currentState!.validate()) {
+                              // If the form is valid, display a Snackbar.
+
+                              showLoadingSnackbar();
+                              await createNewSale();
+
+                              if (context.mounted)
+                                ScaffoldMessenger.of(context).clearSnackBars();
+
+                              showDoneSnackbar();
+
+                              if (context.mounted) Navigator.of(context).pop();
+                            }
+                          },
+                        )),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return const Text('No products yet!!');
+          }),
     );
+  }
+
+  buildForms() {
+    return Expanded(
+      child: ListView.builder(
+          physics: const ScrollPhysics(),
+          controller: _scrollController,
+          itemCount: SaleProductForm.allForms.length,
+          // shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          itemBuilder: (context, index) {
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(child: SaleProductForm.allForms[index]),
+                IconButton(
+                  onPressed: () =>
+                      removeProduct(SaleProductForm.allForms[index]),
+                  icon: const Icon(
+                    Icons.remove_circle,
+                    color: Colors.red,
+                  ),
+                  iconSize: 30,
+                ),
+              ],
+            );
+          }),
+    );
+  }
+
+  void showLoadingSnackbar() {
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        backgroundColor: Color(0xFF4796BD),
+        duration: Duration(days: 365),
+        content: Text('Data is in processing.')));
+  }
+
+  void showDoneSnackbar() {
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 3),
+        content: Text('Done.')));
   }
 }
