@@ -22,7 +22,7 @@ class RouteGenerator {
       case '/add_Stock':
         return MaterialPageRoute(builder: (_) => const AddStockScreen());
       case '/add_sale':
-        return MaterialPageRoute(builder: (_) => const AddSaleScreen());
+        return MaterialPageRoute(builder: (_) => AddSaleScreen());
       case '/stock':
         return MaterialPageRoute(builder: (_) => const StockScreen());
       case '/sales':
