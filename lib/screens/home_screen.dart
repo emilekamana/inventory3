@@ -115,9 +115,13 @@ class HomeFloatingButton extends StatelessWidget {
       icon: Icons.add,
       activeIcon: Icons.close,
       children: [
-        SpeedDialChild(label: 'New sale', child: const Icon(Icons.monetization_on)),
-        SpeedDialChild(label: 'New stock item', child: const Icon(Icons.list)),
-        SpeedDialChild(label: 'New note', child: const Icon(Icons.note_add)),
+        SpeedDialChild(onTap: (){
+          Navigator.of(context).pushNamed('/add_sale');
+        },label: 'New sale', child: const Icon(Icons.monetization_on)),
+        SpeedDialChild(onTap: ()=> 
+          Navigator.of(context).pushNamed('/add_Stock'),label: 'New stock item', child: const Icon(Icons.list)),
+        SpeedDialChild(onTap: ()=> 
+          Navigator.of(context).pushNamed('/notes'),label: 'New note', child: const Icon(Icons.note_add)),
       ],
     );
   }

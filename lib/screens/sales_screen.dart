@@ -23,7 +23,7 @@ class _SalesScreenState extends State<SalesScreen> {
     return DefaultScaffold(
       floatingButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () {},
+        onPressed: () => Navigator.of(context).pushNamed('/add_sale'),
       ),
       title: "Sales",
       body: StreamBuilder(

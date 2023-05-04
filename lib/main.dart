@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Inventory',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/sales',
+      initialRoute: '/',
       onGenerateRoute: RouteGenerator.generateRoute,
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFF3F9FB),
