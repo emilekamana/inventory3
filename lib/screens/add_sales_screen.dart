@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stock_management/controllers/product_controller.dart';
+import 'package:stock_management/controllers/sale_controller.dart';
 import 'package:stock_management/models/product_model.dart';
 import 'package:stock_management/models/sale_model.dart';
 import 'package:stock_management/models/sold_product_model.dart';
@@ -18,6 +20,8 @@ class AddSaleScreen extends StatefulWidget {
   }
 }
 
+SaleController _saleController = SaleController();
+
 class _AddSaleScreenState extends State<AddSaleScreen> {
   final _formKey = GlobalKey<FormState>();
   final CollectionReference<Map<String, dynamic>> _products =
@@ -29,30 +33,40 @@ class _AddSaleScreenState extends State<AddSaleScreen> {
       .map((e) => e.productContoller!.dropDownValue.toString())
       .toList();
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   Future<void> createNewSale() async {
-    try {
-      List<SoldProductModel> soldProducts = [];
-      double total = 0;
-      for (var sale in SaleProductForm.allForms) {
-        soldProducts.add(SoldProductModel(
-            id: sale.productContoller!.dropDownValue!.value,
-            qty: sale.qtyController.text,
-            price: sale.priceController.text));
-        total = total + double.parse(sale.priceController.text);
+    List<SoldProductModel> soldProducts = [];
+    double total = 0;
+    final Map<String, double> totalQty = {};
+    for (var sale in SaleProductForm.allForms) {
+      Product product =
+          (sale.productContoller!.dropDownValue!.value as Product);
+      String productId = product.id;
+      if (totalQty[productId] == null) {
+        totalQty[productId] = double.parse(product.qty);
       }
-      Sale(
-          name: _nameController.text,
-          products: soldProducts,
-          total: total.toString(),
-          dateTimeAdded: DateTime.now());
-    } catch (e) {
-      print(e);
+      totalQty[productId] =
+          (totalQty[productId]! - double.parse(sale.qtyController.text));
+      if (totalQty[productId]! < 0) {
+        throw Exception('Available quantity exceeded for ${product.name}');
+      }
+      soldProducts.add(SoldProductModel(
+          id: product.id,
+          qty: sale.qtyController.text,
+          price: sale.priceController.text));
+      total = total + double.parse(sale.priceController.text);
     }
+    totalQty.forEach((key, value) {
+      _products
+          .doc(key)
+          .update({'qty': value.toString()});
+    });
+
+    Sale newSale = Sale(
+        name: _nameController.text,
+        products: soldProducts,
+        total: total.toString(),
+        dateTimeAdded: DateTime.now());
+    await _saleController.createsale(newSale);
   }
 
   void addProduct(snapshot) {
@@ -123,6 +137,31 @@ class _AddSaleScreenState extends State<AddSaleScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
                   children: [
+                    TextFormField(
+                      controller: _nameController,
+                      style: const TextStyle(fontSize: 14),
+                      decoration: const InputDecoration(
+                        hintStyle: TextStyle(fontSize: 14),
+                        labelStyle: TextStyle(fontSize: 14),
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                        border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        labelText: 'Name',
+                      ),
+                      validator: (value) {
+                        if (value is String) {
+                          if (value.isEmpty) {
+                            return 'Please enter some text';
+                          }
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     buildForms(),
                     Row(
                       mainAxisSize: MainAxisSize.max,
@@ -156,14 +195,24 @@ class _AddSaleScreenState extends State<AddSaleScreen> {
                               // If the form is valid, display a Snackbar.
 
                               showLoadingSnackbar();
-                              await createNewSale();
+                              await createNewSale().then((value) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context)
+                                      .clearSnackBars();
+                                }
 
-                              if (context.mounted)
-                                ScaffoldMessenger.of(context).clearSnackBars();
+                                showDoneSnackbar();
 
-                              showDoneSnackbar();
-
-                              if (context.mounted) Navigator.of(context).pop();
+                                if (context.mounted) {
+                                  Navigator.of(context).pop();
+                                }
+                              }).catchError((error) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context)
+                                      .clearSnackBars();
+                                }
+                                showErrorSnackbar(error);
+                              });
                             }
                           },
                         )),
@@ -188,20 +237,27 @@ class _AddSaleScreenState extends State<AddSaleScreen> {
           // shrinkWrap: true,
           scrollDirection: Axis.vertical,
           itemBuilder: (context, index) {
-            return Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            return Column(
               children: [
-                Flexible(child: SaleProductForm.allForms[index]),
-                IconButton(
-                  onPressed: () =>
-                      removeProduct(SaleProductForm.allForms[index]),
-                  icon: const Icon(
-                    Icons.remove_circle,
-                    color: Colors.red,
-                  ),
-                  iconSize: 30,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Flexible(child: SaleProductForm.allForms[index]),
+                    IconButton(
+                      onPressed: () =>
+                          removeProduct(SaleProductForm.allForms[index]),
+                      icon: const Icon(
+                        Icons.remove_circle,
+                        color: Colors.red,
+                      ),
+                      iconSize: 30,
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
                 ),
               ],
             );
@@ -221,5 +277,12 @@ class _AddSaleScreenState extends State<AddSaleScreen> {
         backgroundColor: Colors.green,
         duration: Duration(seconds: 3),
         content: Text('Done.')));
+  }
+
+  void showErrorSnackbar(error) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 3),
+        content: Text('Error: $error')));
   }
 }

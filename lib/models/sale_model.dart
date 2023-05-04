@@ -1,12 +1,14 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:stock_management/models/sold_product_model.dart';
 
 enum SaleStatus { pernding, unpaid, completed }
 
 class Sale {
+  late String id;
   String name;
   List<SoldProductModel> products;
   late SaleStatus? status;
@@ -21,6 +23,7 @@ class Sale {
   }) : status = status ?? SaleStatus.pernding;
 
   Sale copyWith({
+    String? id,
     String? name,
     List<SoldProductModel>? products,
     String? total,
@@ -46,9 +49,14 @@ class Sale {
   factory Sale.fromMap(Map<String, dynamic> map) {
     return Sale(
       name: map['name'] as String,
-      products: List<SoldProductModel>.from((map['products'] as List<int>).map<SoldProductModel>((x) => SoldProductModel.fromMap(x as Map<String,dynamic>),),),
+      products: List<SoldProductModel>.from(
+        (map['products'] as List<int>).map<SoldProductModel>(
+          (x) => SoldProductModel.fromMap(x as Map<String, dynamic>),
+        ),
+      ),
       total: map['total'] as String,
-      dateTimeAdded: DateTime.fromMillisecondsSinceEpoch(map['dateTimeAdded'] as int),
+      dateTimeAdded:
+          DateTime.fromMillisecondsSinceEpoch(map['dateTimeAdded'] as int),
     );
   }
 
@@ -66,19 +74,39 @@ class Sale {
   bool operator ==(covariant Sale other) {
     if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
-  
-    return 
-      other.name == name &&
-      listEquals(other.products, products) &&
-      other.total == total &&
-      other.dateTimeAdded == dateTimeAdded;
+
+    return other.name == name &&
+        listEquals(other.products, products) &&
+        other.total == total &&
+        other.dateTimeAdded == dateTimeAdded;
   }
 
   @override
   int get hashCode {
     return name.hashCode ^
-      products.hashCode ^
-      total.hashCode ^
-      dateTimeAdded.hashCode;
+        products.hashCode ^
+        total.hashCode ^
+        dateTimeAdded.hashCode;
+  }
+
+  factory Sale.fromSnapshot(
+      QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    final data = document.data();
+
+    Sale sale = Sale(
+      name: data['name'] as String,
+      products: List<SoldProductModel>.from(
+        (data['products'] as List<int>).map<SoldProductModel>(
+          (x) => SoldProductModel.fromMap(x as Map<String, dynamic>),
+        ),
+      ),
+      total: data['total'] as String,
+      dateTimeAdded:
+          DateTime.fromMillisecondsSinceEpoch(data['dateTimeAdded'] as int),
+    );
+
+    sale.id = document.id;
+
+    return sale;
   }
 }

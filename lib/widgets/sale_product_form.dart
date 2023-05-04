@@ -30,6 +30,7 @@ class SaleProductForm extends StatelessWidget {
       ),
       Flexible(
         child: TextFormField(
+          controller: qtyController,
           inputFormatters: [
             FilteringTextInputFormatter.allow((RegExp("[.0-9]")))
           ],
@@ -58,6 +59,7 @@ class SaleProductForm extends StatelessWidget {
       ),
       Flexible(
         child: TextFormField(
+          controller: priceController,
           inputFormatters: [
             FilteringTextInputFormatter.allow((RegExp("[.0-9]")))
           ],
@@ -106,17 +108,18 @@ class SaleProductForm extends StatelessWidget {
                 borderRadius: BorderRadius.all(Radius.circular(10))),
             hintText: "Search"),
         validator: (value) {
-          if (value == null) {
-            return "Required field";
-          } else {
-            return null;
+          if (value is String) {
+            if (value.isEmpty) {
+              return 'Choose product';
+            }
           }
+          return null;
         },
         dropDownItemCount: snapshot.data!.docs.length,
 
         dropDownList: List.generate(snapshot.data!.docs.length, (index) {
           Product product = Product.fromSnapshot(snapshot.data!.docs[index]);
-          return DropDownValueModel(name: product.name, value: index);
+          return DropDownValueModel(name: product.name, value: product);
         }).toList(),
         onChanged: (val) {},
       );
