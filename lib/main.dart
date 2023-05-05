@@ -9,6 +9,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'utils/firebase_options.dart';
 
 Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Inventory',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/stock',
+      initialRoute: '/splash',
       onGenerateRoute: RouteGenerator.generateRoute,
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFF3F9FB),

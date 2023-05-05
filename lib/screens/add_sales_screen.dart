@@ -36,7 +36,7 @@ class _AddSaleScreenState extends State<AddSaleScreen> {
   Future<void> createNewSale() async {
     List<SoldProductModel> soldProducts = [];
     double total = 0;
-    final Map<String, double> totalQty = {};
+    Map<String, double?> totalQty = {};
     for (var sale in SaleProductForm.allForms) {
       Product product =
           (sale.productContoller!.dropDownValue!.value as Product);
@@ -57,8 +57,12 @@ class _AddSaleScreenState extends State<AddSaleScreen> {
       total = total + double.parse(sale.priceController.text);
     }
     totalQty.forEach((key, value) {
-      _products.doc(key).update({'qty': value.toString()});
+      _products.doc(key).update({'qty': value!.toString()});
+      // print('updated');
+      totalQty[key] = null;
     });
+
+    totalQty = {};
 
     Sale newSale = Sale(
         name: _nameController.text,
@@ -117,7 +121,9 @@ class _AddSaleScreenState extends State<AddSaleScreen> {
             if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
               return Column(
                 children: const <Widget>[
-                  Center(child: Text("Unable to find any products"))
+                  Center(
+                      child: Text(
+                          "Unable to find any products! First add new products."))
                 ],
               );
             }

@@ -72,7 +72,7 @@ class SalesTable extends StatelessWidget {
                     label: Text('Date'),
                   ),
                 ],
-                rows: snapshot.data!.docs.map((doc) {
+                rows: snapshot.data!.docs.map<DataRow>((doc) {
                   Sale sale = Sale.fromSnapshot(doc);
                   return DataRow(cells: <DataCell>[
                     DataCell(

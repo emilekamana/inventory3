@@ -15,18 +15,31 @@ class Splash extends StatefulWidget {
   State<StatefulWidget> createState() => _SlashState();
 }
 
-class _SlashState extends State<Splash> {
+class _SlashState extends State<Splash> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 10),
+      vsync: this,
+    )..forward();
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.decelerate,
+    );
     Timer(
-        const Duration(seconds: 3),
-        (() => {
-              if (_auth.currentUser != null)
-                {Navigator.of(context).popAndPushNamed('/')}
-              else
-                Navigator.of(context).popAndPushNamed('/login')
-            }));
+      const Duration(seconds: 12),
+      () {
+        if (_auth.currentUser != null) {
+          Navigator.of(context).popAndPushNamed('/');
+        } else {
+          Navigator.of(context).popAndPushNamed('/login');
+        }
+      },
+    );
   }
 
   @override
@@ -36,19 +49,32 @@ class _SlashState extends State<Splash> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset('images/logo.svg'),
-            const Text(
-              'Inventory',
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: 32,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 2,
+            FadeTransition(
+              opacity: _animation,
+              child: SvgPicture.asset('images/logo.svg'),
+            ),
+            const SizedBox(height: 16),
+            FadeTransition(
+              opacity: _animation,
+              child: const Text(
+                'Inventory',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 32,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 2,
+                ),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }
