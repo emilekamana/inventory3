@@ -4,6 +4,9 @@ import 'package:stock_management/controllers/product_controller.dart';
 import 'package:stock_management/controllers/sale_controller.dart';
 import 'package:stock_management/models/product_model.dart';
 import 'package:stock_management/models/sale_model.dart';
+import 'package:stock_management/widgets/default_scaffold.dart';
+import 'package:stock_management/widgets/sales_table.dart';
+import 'package:stock_management/widgets/stock_table.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -27,257 +30,100 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Future<void> _selectDate(BuildContext context) async {
     final picked = await showDateRangePicker(
       context: context,
-      initialDateRange: selectedDateRange ??
-          DateTimeRange(
-              start: DateTime.now().subtract(const Duration(days: 3)),
-              end: DateTime.now().add(const Duration(days: 3))),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
+      builder: (context, child) => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ConstrainedBox(
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.8,
+                maxHeight: MediaQuery.of(context).size.height * 0.8),
+            child: child,
+          ),
+        ],
+      ),
     );
     if (picked != null && picked != selectedDateRange) {
       setState(() {
-        selectedDateRange = selectedDateRange;
+        selectedDateRange = picked;
       });
     }
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selectedDateRange = null;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'History Page',
-      home: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('History Page'),
-            backgroundColor: const Color(0xFF4796BD),
-            bottom: const TabBar(
-              tabs: [
-                Tab(text: 'Sales'),
-                Tab(text: 'Inventory'),
-              ],
+    return DefaultTabController(
+      length: 2,
+      child: DefaultScaffold(
+        scrollable: false,
+        floatingButton: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            selectedDateRange == null
+                ? const SizedBox(
+                    height: 0,
+                    width: 0,
+                  )
+                : TextButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedDateRange = null;
+                      });
+                    },
+                    child: const Text(
+                      'Clear dates',
+                      style: TextStyle(color: Colors.red),
+                    )),
+            FloatingActionButton(
+              onPressed: () {
+                _selectDate(context);
+              },
+              child: const Icon(Icons.calendar_today),
             ),
-          ),
-          body: TabBarView(
-            children: [
-              SingleChildScrollView(
-                child: StreamBuilder(
-          stream: _sales.snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Text(snapshot.error.toString());
-            }
-
-            if (snapshot.connectionState == ConnectionState.waiting ||
-                snapshot.hasData == false) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const <Widget>[
-                    CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Color(0xFF4796BD))),
-                    // Loader Animation Widget
-                    Padding(padding: EdgeInsets.only(top: 20.0)),
-                  ],
-                ),
-              );
-            }
-
-            if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
-              return Column(
-                children: const <Widget>[
-                  Center(child: Text("Unable to find any records"))
+          ],
+        ),
+        title: 'History',
+        bottom: const TabBar(
+          tabs: [
+            Tab(text: 'Sales'),
+            Tab(text: 'Inventory'),
+          ],
+        ),
+        body: TabBarView(
+          children: selectedDateRange != null
+              ? [
+                  SalesTable(
+                      sales: _sales
+                          .where('dateTimeAdded',
+                              isGreaterThanOrEqualTo: selectedDateRange!
+                                  .start.millisecondsSinceEpoch)
+                          .where('dateTimeAdded',
+                              isLessThanOrEqualTo:
+                                  selectedDateRange!.end.millisecondsSinceEpoch)
+                          .snapshots()),
+                  StockTable(
+                      products: _products
+                          .where('dateTimeAdded',
+                              isGreaterThanOrEqualTo: selectedDateRange!
+                                  .start.millisecondsSinceEpoch)
+                          .where('dateTimeAdded',
+                              isLessThanOrEqualTo:
+                                  selectedDateRange!.end.millisecondsSinceEpoch)
+                          .snapshots()),
+                ]
+              : [
+                  SalesTable(sales: _sales.snapshots()),
+                  StockTable(products: _products.snapshots()),
                 ],
-              );
-            }
-
-            if (snapshot.hasData) {
-              return Theme(
-                data: Theme.of(context)
-                    .copyWith(dividerColor: Colors.transparent),
-                child: DataTable(
-                  dividerThickness: 0.0,
-                  headingTextStyle: const TextStyle(
-                    color: Color.fromARGB(255, 137, 137, 137),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w300,
-                  ),
-                  headingRowHeight: 60,
-                  dataRowHeight: 60,
-                  dataTextStyle: const TextStyle(
-                    fontSize: 14,
-                  ),
-                  columnSpacing: 20.0,
-                  columns: const [
-                    DataColumn(
-                      label: Text('Name'),
-                    ),
-                    DataColumn(
-                      label: Text('Products'),
-                    ),
-                    DataColumn(
-                      label: Text('Total'),
-                    ),
-                    DataColumn(
-                      label: Text('Date'),
-                    ),
-                  ],
-                  rows: snapshot.data!.docs.map((doc) {
-                    Sale sale = Sale.fromSnapshot(doc);
-                    return DataRow(cells: <DataCell>[
-                      DataCell(
-                        ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.1,
-                          ),
-                          child: Text(
-                            sale.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                          ),
-                        ),
-                      ),
-                      DataCell(
-                        ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.3,
-                          ),
-                          child: Text(
-                            sale.products.toString(),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                          ),
-                        ),
-                      ),
-                      DataCell(
-                        ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.1,
-                          ),
-                          child: Text(
-                            sale.total,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                          ),
-                        ),
-                      ),
-                      DataCell(
-                        Text(
-                          sale.dateTimeAdded.toString(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: true,
-                        ),
-                      ),
-                    ]);
-                  }).toList(),
-                ),
-              );
-            }
-            return const Center(child: Text('Something went wrong!!'));
-          }),
-              ),
-              SingleChildScrollView(
-                child: StreamBuilder(
-          stream: _products.snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Text(snapshot.error.toString());
-            }
-
-            if (snapshot.connectionState == ConnectionState.waiting ||
-                snapshot.hasData == false) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const <Widget>[
-                    CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Color(0xFF4796BD))),
-                    // Loader Animation Widget
-                    Padding(padding: EdgeInsets.only(top: 20.0)),
-                  ],
-                ),
-              );
-            }
-
-            if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
-              return Column(
-                children: const <Widget>[
-                  Center(child: Text("Unable to find any records"))
-                ],
-              );
-            }
-
-            if (snapshot.hasData) {
-              return Theme(
-                data: Theme.of(context)
-                    .copyWith(dividerColor: Colors.transparent),
-                child: DataTable(
-                    dividerThickness: 0.0,
-                    headingTextStyle: const TextStyle(
-                      color: Color.fromARGB(255, 137, 137, 137),
-                      fontSize: 18,
-                      fontWeight: FontWeight.w300,
-                    ),
-                    headingRowHeight: 60,
-                    dataRowHeight: 60,
-                    dataTextStyle: const TextStyle(
-                      fontSize: 14,
-                    ),
-                    columnSpacing: 20.0,
-                    columns: const [
-                      DataColumn(
-                        label: Text('Name'),
-                      ),
-                      DataColumn(
-                        label: Text('Quantity'),
-                      ),
-                      DataColumn(
-                        label: Text('Price'),
-                      ),
-                    ],
-                    rows: snapshot.data!.docs.map((doc) {
-                      Product product = Product.fromSnapshot(doc);
-                      return DataRow(
-                        cells: <DataCell>[
-                          DataCell(
-                            ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width * 0.25,
-                              ),
-                              child: Text(
-                                product.name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                softWrap: true,
-                              ),
-                            ),
-                          ),
-                          DataCell(Text(product.qty)),
-                          DataCell(Text(product.price)),
-                          
-                        ],
-                      );
-                    }).toList()),
-              );
-            }
-            return const Center(child: Text('Something went wrong!!'));
-          }),
-              ),
-            ],
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              _selectDate(context);
-            },
-            child: const Icon(Icons.calendar_today),
-          ),
         ),
       ),
     );

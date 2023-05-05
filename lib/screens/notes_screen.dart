@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:stock_management/controllers/note_controller.dart';
 import 'package:stock_management/widgets/default_scaffold.dart';
 
 class NotesScreen extends StatefulWidget {
@@ -10,8 +12,12 @@ class NotesScreen extends StatefulWidget {
   }
 }
 
+NoteController _noteController = NoteController();
+
 class _NotesScreenState extends State<NotesScreen> {
-  String input = ""; // declare variables for the state
+  final TextEditingController _controller = TextEditingController();
+  final CollectionReference<Map<String, dynamic>> _notes =
+      _noteController.notesCollection;
 
   List notes = [];
 
@@ -23,11 +29,8 @@ class _NotesScreenState extends State<NotesScreen> {
     super.initState();
   }
 
-  deleteNote(index) {
-    // deleting notes and changing state
-    setState(() {
-      notes.removeAt(index);
-    });
+  deleteNote(id) async {
+    await _noteController.notesCollection.doc(id).delete();
   }
 
   clearNotes() {
@@ -55,14 +58,12 @@ class _NotesScreenState extends State<NotesScreen> {
                     style: TextStyle(color: Colors.blue),
                   ),
                   titleTextStyle: const TextStyle(
-                      fontWeight: FontWeight.w500, fontSize: 24),
+                      fontWeight: FontWeight.w500, fontSize: 18),
                   content: TextField(
+                    controller: _controller,
                     decoration: const InputDecoration(
                       hintText: 'Write here',
                     ),
-                    onChanged: (value) {
-                      input = value;
-                    },
                   ),
                   actions: [
                     SizedBox(
@@ -71,21 +72,26 @@ class _NotesScreenState extends State<NotesScreen> {
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
-                            padding: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.all(10),
                           ),
-                          onPressed: () {
-                            setState(() {
-                              notes.add(input);
-                            });
-                            Navigator.of(context).pop();
+                          onPressed: () async {
+                            if (_controller.text.isNotEmpty) {
+                              await _noteController
+                                  .createNote(_controller.text);
+                            } else {
+                              showErrorSnackbar(
+                                  "Error: Can't create an Empty note");
+                            }
+                            if (context.mounted) {
+                              Navigator.of(context).pop();
+                            }
                           },
                           child: const Text(
                             'Create note',
                             style: TextStyle(
                                 color: Colors.white,
-                                fontWeight: FontWeight.w700,
                                 letterSpacing: 2,
-                                fontSize: 24),
+                                fontSize: 18),
                           )),
                     ),
                   ],
@@ -99,44 +105,78 @@ class _NotesScreenState extends State<NotesScreen> {
           size: 32,
         ),
       ),
-      body: notes.isEmpty // check if list is empty and display message
-          ? const Center(
-              child: Text(
-                "No notes added yet! Add one at the by clicking the + button",
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 32),
-              ),
-            )
-          : SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.8,
-            child: ListView.builder(
-                itemCount: notes.length,
-                // scrollDirection: Axis.vertical,
-                itemBuilder: (BuildContext context, int index) {
-                  return Column(
-                    children: [
-                      ListTile(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                        tileColor: Colors.blueGrey.shade100,
-                        title: Row(
-                          children: [
-                            Text(notes[index]),
-                          ],
+      body: StreamBuilder(
+          stream: _notes.snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text(snapshot.error.toString());
+            }
+
+            if (snapshot.connectionState == ConnectionState.waiting ||
+                snapshot.hasData == false) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const <Widget>[
+                    CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Color(0xFF4796BD))),
+                    // Loader Animation Widget
+                    Padding(padding: EdgeInsets.only(top: 20.0)),
+                  ],
+                ),
+              );
+            }
+
+            if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+              return Column(
+                children: const <Widget>[
+                  Center(child: Text("Unable to find any records"))
+                ],
+              );
+            }
+            if (snapshot.hasData) {
+              return SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * 0.8,
+                child: ListView.builder(
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    String note =
+                        snapshot.data!.docs[index]['text'] ?? 'Empty Note';
+                    return Column(
+                      children: [
+                        ListTile(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                          tileColor: Colors.blueGrey.shade100,
+                          title: Text(note),
+                          trailing: PopUpOptionMenu(
+                            deleteNote:
+                                deleteNote,
+                            id: snapshot.data!.docs[index].id,
+                          ),
                         ),
-                        trailing: PopUpOptionMenu(
-                          deleteNote: deleteNote,
-                          index: index,
+                        const SizedBox(
+                          height: 10,
                         ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                    ],
-                  );
-                },
-              ),
-          ),
+                      ],
+                    );
+                  },
+                ),
+              );
+            }
+
+            return const Center(child: Text('Something went wrong!!'));
+          }),
     );
+  }
+
+  void showErrorSnackbar(error) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 3),
+        content: Text('Error: $error')));
   }
 }
 
@@ -144,9 +184,9 @@ enum MenuOptions { Delete, Edit }
 
 class PopUpOptionMenu extends StatelessWidget {
   // pop up menu for the cards
-  final index;
+  final id;
   final deleteNote;
-  const PopUpOptionMenu({super.key, this.deleteNote, this.index});
+  const PopUpOptionMenu({super.key, this.deleteNote, this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +213,7 @@ class PopUpOptionMenu extends StatelessWidget {
         // set actions for the menu
         switch (value) {
           case MenuOptions.Delete:
-            deleteNote(index);
+            deleteNote(id);
             break;
           case MenuOptions.Edit:
             // TODO: Handle this case.

@@ -8,12 +8,17 @@ class DefaultScaffold extends StatelessWidget {
   final Widget body;
   final String title;
   final Widget? floatingButton;
+  final PreferredSizeWidget? bottom;
+  final bool? scrollable;
 
   const DefaultScaffold(
       {super.key,
       required this.title,
       required this.body,
-      this.floatingButton});
+      this.floatingButton,
+      this.bottom,
+      scrollable})
+      : scrollable = scrollable ?? true;
 // await _auth.signOut().catchError((e) {
 //                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
 //                       content: Text(e.message),
@@ -24,6 +29,7 @@ class DefaultScaffold extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
+          bottom: bottom,
           actions: [
             PopupMenuButton<int>(
               icon: const Icon(
@@ -83,7 +89,7 @@ class DefaultScaffold extends StatelessWidget {
         // drawer:
         body: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: SingleChildScrollView(child: body),
+          child: scrollable! ? SingleChildScrollView(child: body) : body,
         ),
         floatingActionButton: floatingButton,
       ),

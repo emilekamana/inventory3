@@ -8,22 +8,29 @@ class Product {
   String name;
   String qty;
   String price;
+  DateTime dateTimeAdded;
+  DateTime dateTimeUpdated;
   Product({
     required this.name,
     required this.qty,
     required this.price,
+    required this.dateTimeAdded,
+    required this.dateTimeUpdated,
   });
 
   Product copyWith({
-    String? id,
     String? name,
     String? qty,
     String? price,
+    DateTime? dateTimeAdded,
+    DateTime? dateTimeUpdated,
   }) {
     return Product(
       name: name ?? this.name,
       qty: qty ?? this.qty,
       price: price ?? this.price,
+      dateTimeAdded: dateTimeAdded ?? this.dateTimeAdded,
+      dateTimeUpdated: dateTimeUpdated ?? this.dateTimeUpdated,
     );
   }
 
@@ -32,6 +39,8 @@ class Product {
       'name': name,
       'qty': qty,
       'price': price,
+      'dateTimeAdded': dateTimeAdded.millisecondsSinceEpoch,
+      'dateTimeUpdated': dateTimeUpdated.millisecondsSinceEpoch,
     };
   }
 
@@ -40,6 +49,10 @@ class Product {
       name: map['name'] as String,
       qty: map['qty'] as String,
       price: map['price'] as String,
+      dateTimeAdded:
+          DateTime.fromMillisecondsSinceEpoch(map['dateTimeAdded'] as int),
+      dateTimeUpdated:
+          DateTime.fromMillisecondsSinceEpoch(map['dateTimeUpdated'] as int),
     );
   }
 
@@ -50,7 +63,7 @@ class Product {
 
   @override
   String toString() {
-    return 'Product(id: $id, name: $name, qty: $qty, price: $price)';
+    return 'Product(id: $id, name: $name, qty: $qty, price: $price, dateTimeAdded: $dateTimeAdded, dateTimeUpdated: $dateTimeUpdated)';
   }
 
   @override
@@ -60,31 +73,20 @@ class Product {
     return other.id == id &&
         other.name == name &&
         other.qty == qty &&
-        other.price == price;
+        other.price == price &&
+        other.dateTimeAdded == dateTimeAdded &&
+        other.dateTimeUpdated == dateTimeUpdated;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ name.hashCode ^ qty.hashCode ^ price.hashCode;
+    return id.hashCode ^
+        name.hashCode ^
+        qty.hashCode ^
+        price.hashCode ^
+        dateTimeAdded.hashCode ^
+        dateTimeUpdated.hashCode;
   }
-
-  static final List<Product> staticProducts = [
-    Product(name: "coco", qty: "100", price: "2000"),
-    Product(
-        name: "bananabananabananabananabananabananabananabanana",
-        qty: "30",
-        price: "400"),
-    Product(name: "onion", qty: "70", price: "700"),
-    Product(name: "Rice", qty: "20", price: "1000"),
-    Product(name: "beans", qty: "30", price: "100"),
-    Product(name: "potato", qty: "50", price: "500"),
-    Product(name: "coco", qty: "100", price: "2000"),
-    Product(name: "banana", qty: "30", price: "400"),
-    Product(name: "onion", qty: "70", price: "700"),
-    Product(name: "Rice", qty: "20", price: "1000"),
-    Product(name: "beans", qty: "30", price: "100"),
-    Product(name: "potato", qty: "50", price: "500"),
-  ];
 
   factory Product.fromSnapshot(
       QueryDocumentSnapshot<Map<String, dynamic>> document) {
@@ -94,6 +96,28 @@ class Product {
       name: data['name'] ?? 'nan',
       qty: data['qty'] ?? 'nan',
       price: data["price"] ?? 'nan',
+      dateTimeAdded:
+          DateTime.fromMillisecondsSinceEpoch(data['dateTimeAdded'] ?? 0),
+      dateTimeUpdated:
+          DateTime.fromMillisecondsSinceEpoch(data['dateTimeAdded'] ?? 0),
+    );
+
+    product.id = document.id;
+
+    return product;
+  }
+  factory Product.fromSnapshot2(
+      DocumentSnapshot<Map<String, dynamic>> document) {
+    final data = document.data()!;
+
+    Product product = Product(
+      name: data['name'] ?? 'nan',
+      qty: data['qty'] ?? 'nan',
+      price: data["price"] ?? 'nan',
+      dateTimeAdded:
+          DateTime.fromMillisecondsSinceEpoch(data['dateTimeAdded'] ?? 0),
+      dateTimeUpdated:
+          DateTime.fromMillisecondsSinceEpoch(data['dateTimeAdded'] ?? 0),
     );
 
     product.id = document.id;

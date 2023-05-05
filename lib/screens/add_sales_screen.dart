@@ -51,14 +51,13 @@ class _AddSaleScreenState extends State<AddSaleScreen> {
       }
       soldProducts.add(SoldProductModel(
           id: product.id,
+          name: product.name,
           qty: sale.qtyController.text,
           price: sale.priceController.text));
       total = total + double.parse(sale.priceController.text);
     }
     totalQty.forEach((key, value) {
-      _products
-          .doc(key)
-          .update({'qty': value.toString()});
+      _products.doc(key).update({'qty': value.toString()});
     });
 
     Sale newSale = Sale(
@@ -188,7 +187,7 @@ class _AddSaleScreenState extends State<AddSaleScreen> {
                               shape: const RoundedRectangleBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(10)))),
-                          child: const Text('Add to Stock'),
+                          child: const Text('Add Sale Entry'),
                           onPressed: () async {
                             // It returns true if the form is valid, otherwise returns false
                             if (_formKey.currentState!.validate()) {

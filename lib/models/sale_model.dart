@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:stock_management/models/sold_product_model.dart';
 
-enum SaleStatus { pernding, unpaid, completed }
+enum SaleStatus { pending, unpaid, completed }
 
 class Sale {
   late String id;
@@ -20,7 +20,7 @@ class Sale {
     status,
     required this.total,
     required this.dateTimeAdded,
-  }) : status = status ?? SaleStatus.pernding;
+  }) : status = status ?? SaleStatus.completed;
 
   Sale copyWith({
     String? id,

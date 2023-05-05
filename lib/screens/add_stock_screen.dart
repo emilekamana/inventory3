@@ -61,7 +61,10 @@ class _AddStockScreenState extends State<AddStockScreen> {
         Product newProduct = Product(
             name: item.productControllers.nameController.text,
             qty: item.productControllers.qtyController.text,
-            price: item.productControllers.priceController.text);
+            price: item.productControllers.priceController.text,
+            dateTimeAdded: DateTime.now(),
+            dateTimeUpdated: DateTime.now());
+
         await _productController.createProduct(newProduct);
       }
     } on Exception catch (e) {
