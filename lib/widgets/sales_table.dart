@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:stock_management/models/sale_model.dart';
 
 class SalesTable extends StatelessWidget {
-  final Stream<QuerySnapshot<Map<String, dynamic>>>  sales;
+  final Stream<QuerySnapshot<Map<String, dynamic>>> sales;
   const SalesTable({super.key, required this.sales});
 
   @override
@@ -35,51 +35,68 @@ class SalesTable extends StatelessWidget {
 
           if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
             return Column(
-              children: const <Widget>[
-                Center(child: Text("No sale records"))
-              ],
+              children: const <Widget>[Center(child: Text("No sale records"))],
             );
           }
 
           if (snapshot.hasData) {
-            return Theme(
-              data:
-                  Theme.of(context).copyWith(dividerColor: Colors.transparent),
-              child: DataTable(
-                dividerThickness: 0.0,
-                headingTextStyle: const TextStyle(
-                  color: Color.fromARGB(255, 137, 137, 137),
-                  fontSize: 18,
-                  fontWeight: FontWeight.w300,
-                ),
-                headingRowHeight: 60,
-                dataRowHeight: 60,
-                dataTextStyle: const TextStyle(
-                  fontSize: 14,
-                ),
-                columnSpacing: 20.0,
-                columns: const [
-                  DataColumn(
-                    label: Text('Name'),
-                  ),
-                  DataColumn(
-                    label: Text('Products'),
-                  ),
-                  DataColumn(
-                    label: Text('Total'),
-                  ),
-                  DataColumn(
-                    label: Text('Date'),
-                  ),
-                ],
-                rows: snapshot.data!.docs.map<DataRow>((doc) {
-                  Sale sale = Sale.fromSnapshot(doc);
-                  return DataRow(cells: <DataCell>[
-                    DataCell(
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.1,
+            return Table(
+                defaultVerticalAlignment: TableCellVerticalAlignment.top,
+                columnWidths: const {
+                  0: FlexColumnWidth(2),
+                  1: FlexColumnWidth(4),
+                  2: FlexColumnWidth(2),
+                  3: FlexColumnWidth(2)
+                },
+                children: [
+                  const TableRow(
+                    children: [
+                      TableCell(
+                        child: Text(
+                          'Name',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 137, 137, 137),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w300,
+                          ),
                         ),
+                      ),
+                      TableCell(
+                        child: Text(
+                          'Products',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 137, 137, 137),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ),
+                      TableCell(
+                        child: Text(
+                          'Total',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 137, 137, 137),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ),
+                      TableCell(
+                        child: Text(
+                          'Date',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 137, 137, 137),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  ...List.generate(snapshot.data!.docs.length, (index) {
+                    Sale sale = Sale.fromSnapshot(snapshot.data!.docs[index]);
+                    return TableRow(children: [
+                      TableCell(
                         child: Text(
                           sale.name,
                           maxLines: 1,
@@ -87,25 +104,21 @@ class SalesTable extends StatelessWidget {
                           softWrap: true,
                         ),
                       ),
-                    ),
-                    DataCell(
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.3,
-                        ),
-                        child: Text(
-                          sale.products.toString(),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: true,
-                        ),
-                      ),
-                    ),
-                    DataCell(
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.1,
-                        ),
+                      TableCell(
+                          child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: sale.products
+                            .map(
+                              (prod) => Text(
+                                prod.toString(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: true,
+                              ),
+                            )
+                            .toList(),
+                      )),
+                      TableCell(
                         child: Text(
                           sale.total,
                           maxLines: 1,
@@ -113,19 +126,17 @@ class SalesTable extends StatelessWidget {
                           softWrap: true,
                         ),
                       ),
-                    ),
-                    DataCell(
-                      Text(
-                        sale.dateTimeAdded.toString(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: true,
+                      TableCell(
+                        child: Text(
+                          sale.dateTimeAdded.toString(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                        ),
                       ),
-                    ),
-                  ]);
-                }).toList(),
-              ),
-            );
+                    ]);
+                  })
+                ]);
           }
           return const Center(child: Text('Something went wrong!!'));
         });

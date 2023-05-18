@@ -51,7 +51,7 @@ class _SlashState extends State<Splash> with SingleTickerProviderStateMixin {
           children: [
             FadeTransition(
               opacity: _animation,
-              child: SvgPicture.asset('images/logo.svg'),
+              child: SvgPicture.asset('assets/images/logo.svg'),
             ),
             const SizedBox(height: 16),
             FadeTransition(

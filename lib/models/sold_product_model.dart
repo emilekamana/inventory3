@@ -51,7 +51,7 @@ class SoldProductModel {
 
   @override
   String toString() {
-    return '$name, qty: $qty, price: $price)';
+    return '$name, qty: $qty, price: $price';
   }
 
   @override

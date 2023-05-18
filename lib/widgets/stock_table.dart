@@ -55,86 +55,107 @@ class _StockTableState extends State<StockTable> {
           }
 
           if (snapshot.hasData) {
-            return Theme(
-              data:
-                  Theme.of(context).copyWith(dividerColor: Colors.transparent),
-              child: DataTable(
-                  dividerThickness: 0.0,
-                  headingTextStyle: const TextStyle(
-                    color: Color.fromARGB(255, 137, 137, 137),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w300,
-                  ),
-                  headingRowHeight: 60,
-                  dataRowHeight: 60,
-                  dataTextStyle: const TextStyle(
-                    fontSize: 14,
-                  ),
-                  columnSpacing: 20.0,
-                  columns: const [
-                    DataColumn(
-                      label: Text('Name'),
-                    ),
-                    DataColumn(
-                      label: Text('Quantity'),
-                    ),
-                    DataColumn(
-                      label: Text('Price'),
-                    ),
-                    DataColumn(
-                      label: Text('Actions'),
-                    ),
-                  ],
-                  rows: snapshot.data!.docs.map((doc) {
-                    Product product = Product.fromSnapshot(doc);
-                    return DataRow(
-                      cells: <DataCell>[
-                        DataCell(
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth:
-                                  MediaQuery.of(context).size.width * 0.25,
-                            ),
-                            child: Text(
-                              product.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              softWrap: true,
-                            ),
-                          ),
+            return Table(
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                children: [
+                  const TableRow(children: [
+                    TableCell(
+                      child: Text(
+                        'Name',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 137, 137, 137),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w300,
                         ),
-                        DataCell(Text(product.qty)),
-                        DataCell(Text(product.price)),
-                        DataCell(
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: () =>
-                                    showEditDialog(context, product),
-                                icon: const Icon(
-                                  Icons.edit,
-                                  color: Color(0xFF4796BD),
-                                ),
+                      ),
+                    ),
+                    TableCell(
+                      child: Text(
+                        'Quantity',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 137, 137, 137),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                    ),
+                    TableCell(
+                      child: Text(
+                        'Price',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 137, 137, 137),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                    ),
+                    TableCell(
+                      child: Text(
+                        'Actions',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 137, 137, 137),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                    ),
+                  ]),
+                  ...List.generate(snapshot.data!.docs.length, (index) {
+                    Product product =
+                        Product.fromSnapshot(snapshot.data!.docs[index]);
+                    return TableRow(children: [
+                      TableCell(
+                        child: Text(
+                          product.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                        ),
+                      ),
+                      TableCell(
+                        child: Text(
+                          product.qty,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                        ),
+                      ),
+                      TableCell(
+                        child: Text(
+                          product.price,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                        ),
+                      ),
+                      TableCell(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            IconButton(
+                              padding: EdgeInsets.zero,
+                              onPressed: () => showEditDialog(context, product),
+                              icon: const Icon(
+                                Icons.edit,
+                                color: Color(0xFF4796BD),
                               ),
-                              IconButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: () =>
-                                    showDeleteDialog(context, product),
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
+                            ),
+                            IconButton(
+                              padding: EdgeInsets.zero,
+                              onPressed: () =>
+                                  showDeleteDialog(context, product),
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.red,
                               ),
-                            ],
-                          ),
-                        )
-                      ],
-                    );
-                  }).toList()),
-            );
+                            ),
+                          ],
+                        ),
+                      )
+                    ]);
+                  }),
+                ]);
           }
           return const Center(child: Text('Something went wrong!!'));
         });
