@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stock_management/screens/home_screen.dart';
+import 'package:stock_management/utils/notifications_service.dart';
 
 import 'utils/route_generator.dart';
 
@@ -13,6 +14,7 @@ Future main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  NotificationsService().initializeNotifications();
   runApp(const MyApp());
 }
 

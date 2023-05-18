@@ -6,6 +6,7 @@ import 'package:stock_management/controllers/sale_controller.dart';
 import 'package:stock_management/models/product_model.dart';
 import 'package:stock_management/models/sale_model.dart';
 import 'package:stock_management/models/sold_product_model.dart';
+import 'package:stock_management/utils/notifications_service.dart';
 import 'package:stock_management/widgets/default_scaffold.dart';
 import 'package:stock_management/widgets/leading_scaffold.dart';
 import 'package:stock_management/widgets/sale_product_form.dart';
@@ -58,7 +59,10 @@ class _AddSaleScreenState extends State<AddSaleScreen> {
     }
     totalQty.forEach((key, value) {
       _products.doc(key).update({'qty': value!.toString()});
-      // print('updated');
+      if (value < 5) {
+        NotificationsService().sendNotification(
+            0, "Stock limit", "Product $value is running out. Remember to restock");
+      }
       totalQty[key] = null;
     });
 
